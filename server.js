@@ -9,16 +9,19 @@ require('dotenv').config();
 
 
 const app = express();
-const PORT = 3000;
 const SECRET_KEY = 'supersecretkey123';
 
 app.use(cors()); // Middleware CORS
 app.use(express.json()); // Pour gérer les requêtes JSON
 
 // Connexion à MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-  .then(() => console.log('Connexion réussie à MongoDB'))
-  .catch((err) => console.error('Erreur MongoDB :', err.message));
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(function() {
+    console.log('Connexion réussie à MongoDB');
+  })
+  .catch(function(err) {
+    console.error('Erreur lors de la connexion à MongoDB', err);
+  });
 
 // Routes
 app.use('/api', postRoutes); // Préfixe toutes les routes des posts avec /api
@@ -26,9 +29,8 @@ app.use('/api', postRoutes); // Préfixe toutes les routes des posts avec /api
 // Middleware pour traiter le JSON
 app.use(express.json());
 
-app.listen(PORT, () => {
-  console.log(`Serveur lancé sur le port ${PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Serveur en cours d'exécution sur le port ${PORT}`));
 
 app.get('/', (req, res) => {
   res.send('Bienvenue sur le backend de BlueFox !');
