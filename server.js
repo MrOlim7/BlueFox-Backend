@@ -10,7 +10,7 @@ const statusRoutes = require('./routes/statusRoutes'); // Chemin correct vers st
 
 const app = express();
 
-app.use('/api', require('./routes/statusRoutes.js')); // Import du routeur de statut
+app.use('/api', require('./routes/statusRoutes')); // Import du routeur de statut
 require('dotenv').config();
 
 app.use(cors()); // Middleware CORS
