@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
@@ -5,24 +6,23 @@ const cors = require('cors');
 const User = require('./User');
 const postRoutes = require('./routes/postRoutes'); // Import du routeur
 const router = express.Router(); // Initialise le routeur
-const statusRoutes = require('./routes/statusRoutes'); // Chemin relatif depuis le fichier server.js
-app.use('/api', require('./routes/statusRoutes')); // Import du routeur de statut
-require('dotenv').config();
-
+const statusRoutes = require('./routes/statusRoutes'); // Chemin correct vers statusRoutes.js
 
 const app = express();
-const SECRET_KEY = 'supersecretkey123';
+
+app.use('/api', require('./routes/statusRoutes.js')); // Import du routeur de statut
+require('dotenv').config();
 
 app.use(cors()); // Middleware CORS
 app.use(express.json()); // Pour gérer les requêtes JSON
 
 // Connexion à MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connexion réussie à MongoDB'))
   .catch((err) => console.error('Erreur lors de la connexion à MongoDB', err));
 
-  // Utilisation des routes
-app.use('/api', statusRoutes); // Utilise le routeur après avoir défini app
+// Utilisation des routes : Cela doit venir après la déclaration de `app`
+app.use('/api', statusRoutes);
 
 // Routes
 app.use('/api', postRoutes); // Préfixe toutes les routes des posts avec /api
