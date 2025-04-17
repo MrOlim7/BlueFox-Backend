@@ -5,6 +5,8 @@ const cors = require('cors');
 const User = require('./User');
 const postRoutes = require('./routes/postRoutes'); // Import du routeur
 const router = express.Router(); // Initialise le routeur
+const statusRoutes = require('./routes/statusRoutes'); // Chemin relatif depuis le fichier server.js
+app.use('/api', require('./routes/statusRoutes')); // Import du routeur de statut
 require('dotenv').config();
 
 
@@ -16,12 +18,11 @@ app.use(express.json()); // Pour gérer les requêtes JSON
 
 // Connexion à MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(function() {
-    console.log('Connexion réussie à MongoDB');
-  })
-  .catch(function(err) {
-    console.error('Erreur lors de la connexion à MongoDB', err);
-  });
+  .then(() => console.log('Connexion réussie à MongoDB'))
+  .catch((err) => console.error('Erreur lors de la connexion à MongoDB', err));
+
+  // Utilisation des routes
+app.use('/api', statusRoutes); // Utilise le routeur après avoir défini app
 
 // Routes
 app.use('/api', postRoutes); // Préfixe toutes les routes des posts avec /api
@@ -56,6 +57,16 @@ router.post('/posts', async (req, res) => {
 
 // Utilise le routeur
 app.use('/api', router);
+
+router.post('/toggle-maintenance', (req, res) => {
+  maintenanceMode = !maintenanceMode; // Inverse l'état
+  res.status(200).json({ mode: maintenanceMode ? "Maintenance" : "En ligne" });
+});
+
+// Route pour l'état actuel
+router.get('/status', (req, res) => {
+  res.status(200).json({ mode: maintenanceMode ? "Maintenance" : "En ligne" });
+});
 
 // Route signup
 app.post('/signup', async (req, res) => {
